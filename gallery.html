@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Interactive Photo Gallery — Life Homecare Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* DESIGN SYSTEM VARIABLES */
+    :root {
+      --navy-dark: #050B14;
+      --navy: #0A1D37;
+      --navy-light: #1A3050;
+      --teal: #0D9488;
+      --teal-light: #14B8A6;
+      --gold: #C5A880;
+      --gold-light: #E2D4C0;
+      --white: #ffffff;
+      
+      /* Theme Defaults (Light Mode) */
+      --bg: #F8FAFC;
+      --text: #1E293B;
+      --muted: #64748B;
+      --card: #ffffff;
+      --border: rgba(10, 29, 55, 0.06);
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 10px 25px -5px rgba(10, 29, 55, 0.08), 0 8px 10px -6px rgba(10, 29, 55, 0.05);
+      --shadow-lg: 0 20px 50px -12px rgba(10, 29, 55, 0.15);
+      
+      --blob-opacity: 0.08;
+      --blob-blend: multiply;
+      
+      --font-sans: 'Inter', sans-serif;
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      --book-bg: #FFFFFF;
+      --book-shadow: rgba(5, 11, 20, 0.15);
+      --spine-gradient: linear-gradient(to right, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    [data-theme="dark"] {
+      --bg: #070B13;
+      --text: #F1F5F9;
+      --muted: #94A3B8;
+      --card: #0F1626;
+      --border: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(15, 22, 38, 0.8);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 50px -12px rgba(0, 0, 0, 0.6);
+      
+      --blob-opacity: 0.14;
+      --blob-blend: screen;
+      
+      --book-bg: #0F1626;
+      --book-shadow: rgba(0, 0, 0, 0.5);
+      --spine-gradient: linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    /* GLOBAL RESET */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--navy);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    [data-theme="dark"] h1, 
+    [data-theme="dark"] h2, 
+    [data-theme="dark"] h3, 
+    [data-theme="dark"] h4 {
+      color: var(--white);
+    }
+    
+    .icon-svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      vertical-align: middle;
+      transition: var(--transition);
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(10, 29, 55, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0 6%;
+      transition: var(--transition);
+    }
+    
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 75px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    
+    .logo-text {
+      font-family: var(--font-heading);
+      color: var(--white);
+      font-size: 1.3rem;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    
+    .logo-text span {
+      color: var(--gold);
+      font-size: 0.72rem;
+      display: block;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    .logo-icon-box {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: var(--transition);
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-back-home:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--white);
+      transform: translateX(-2px);
+    }
+
+    /* MESH GRADIENT BACKGROUND */
+    .mesh-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .mesh-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: var(--blob-opacity);
+      mix-blend-mode: var(--blob-blend);
+      animation: float-blob 25s infinite ease-in-out alternate;
+    }
+    
+    .blob-1 {
+      width: 45vw;
+      height: 45vw;
+      background: radial-gradient(circle, var(--teal-light) 0%, transparent 70%);
+      top: -15%;
+      right: -10%;
+    }
+    
+    .blob-2 {
+      width: 40vw;
+      height: 40vw;
+      background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+      bottom: 5%;
+      left: -10%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float-blob {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      50% { transform: translate(60px, 80px) scale(1.1) rotate(120deg); }
+      100% { transform: translate(-40px, -50px) scale(0.95) rotate(240deg); }
+    }
+
+    /* MAIN CONTENT */
+    main {
+      flex: 1;
+      padding: 120px 6% 60px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 700px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: rgba(13, 148, 136, 0.08);
+      color: var(--teal);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 30px;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(13, 148, 136, 0.15);
+    }
+    
+    .section-title {
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+      color: var(--navy);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+    
+    .section-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* 3D BOOK WRAPPER & LAYOUT */
+    .book-container-outer {
+      width: 100%;
+      max-width: 1050px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    .book-scale-box {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 620px;
+    }
+
+    .book-wrapper {
+      position: relative;
+      width: 900px;
+      height: 580px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+      flex-shrink: 0;
+    }
+
+    /* Shifting classes are tracked in JS to manage caption text, transforms are set dynamically. */
+    .book-wrapper.closed-front {}
+    .book-wrapper.closed-back {}
+    .book-wrapper.open {}
+
+    .book {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      perspective: 2200px;
+      transform-style: preserve-3d;
+    }
+
+    /* Leaf container */
+    .leaf {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      top: 0;
+      left: 50%;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 0.85s cubic-bezier(0.645, 0.045, 0.355, 1);
+      pointer-events: none;
+    }
+
+    /* Active leafs receive pointer events */
+    .leaf.active-left,
+    .leaf.active-right {
+      pointer-events: auto;
+    }
+
+    .leaf.flipped {
+      transform: rotateY(-180deg);
+    }
+
+    /* Page face styling */
+    .page-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      overflow: hidden;
+      background-color: var(--book-bg);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px var(--book-shadow);
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .page-face.front {
+      border-radius: 4px 20px 20px 4px;
+      z-index: 2;
+    }
+
+    .page-face.back {
+      transform: rotateY(180deg);
+      border-radius: 20px 4px 4px 20px;
+      z-index: 1;
+    }
+
+    /* Center spine shadows for realism */
+    .page-face.front::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 35px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(5, 11, 20, 0.15) 0%, rgba(5, 11, 20, 0) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    [data-theme="dark"] .page-face.front::after {
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    .page-face.back::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 35px;
+      height: 100%;
+      background: linear-gradient(to left, rgba(5, 11, 20, 0.15) 0%, rgba(5, 11, 20, 0) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    [data-theme="dark"] .page-face.back::after {
+      background: linear-gradient(to left, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    /* Page edges page-stack effect */
+    .page-face.front::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 8px;
+      height: 100%;
+      background: rgba(10, 29, 55, 0.02);
+      border-left: 1px solid var(--border);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .page-face.back::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 100%;
+      background: rgba(10, 29, 55, 0.02);
+      border-right: 1px solid var(--border);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* COVER PAGES DESIGN */
+    .page-face.cover {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+      border: 2px solid var(--gold);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+      text-align: center;
+    }
+
+    .page-face.cover::after {
+      display: none; /* No spine shadow on cover face */
+    }
+
+    .cover-border-box {
+      border: 1px solid rgba(197, 168, 128, 0.4);
+      padding: 3rem 2rem;
+      border-radius: 12px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .cover-border-box::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(197, 168, 128, 0.15);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .cover-tag {
+      font-size: 0.8rem;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .cover-border-box h2 {
+      font-size: 2.2rem;
+      color: var(--white);
+      margin-bottom: 1rem;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .cover-border-box h2 span {
+      background: linear-gradient(135deg, var(--teal-light), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: block;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 3px;
+      background: var(--gold);
+      margin: 1.5rem 0;
+      border-radius: 2px;
+    }
+
+    .cover-desc {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .cover-footer {
+      font-size: 0.78rem;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      animation: pulse-hint 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-hint {
+      0%, 100% { opacity: 0.6; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-4px); }
+    }
+
+    /* INTERNAL PAGES DESIGN */
+    .page-content {
+      padding: 2.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .page-number {
+      position: absolute;
+      bottom: 1.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .page-face.front .page-number {
+      right: 2rem;
+    }
+
+    .page-face.back .page-number {
+      left: 2rem;
+    }
+
+    .page-content h3 {
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      font-weight: 800;
+    }
+
+    .page-content p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Images inside the pages */
+    .img-wrapper {
+      width: 100%;
+      height: 300px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      position: relative;
+      cursor: zoom-in;
+    }
+
+    .img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .img-wrapper:hover img {
+      transform: scale(1.04);
+    }
+
+    .img-wrapper.portrait-img {
+      background: rgba(10, 29, 55, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .img-wrapper.portrait-img img {
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    [data-theme="dark"] .img-wrapper.portrait-img {
+      background: #000000;
+    }
+
+    .zoom-hint-icon {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      background: rgba(10, 29, 55, 0.75);
+      backdrop-filter: blur(4px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .img-wrapper:hover .zoom-hint-icon {
+      opacity: 1;
+    }
+
+    /* Intro Page Stats & Styling */
+    .intro-section {
+      justify-content: center;
+      padding: 3rem;
+    }
+
+    .intro-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      margin-bottom: 2rem;
+    }
+
+    .intro-section h3 {
+      font-size: 1.7rem;
+      margin-bottom: 1rem;
+    }
+
+    .intro-text {
+      font-size: 1rem !important;
+      line-height: 1.75 !important;
+      margin-bottom: 2rem;
+    }
+
+    .intro-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      margin-top: 1rem;
+    }
+
+    .intro-stat-card h4 {
+      font-size: 1.8rem;
+      color: var(--teal);
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .intro-stat-card p {
+      font-size: 0.8rem !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* Outro Page & Back Cover */
+    .outro-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 3.5rem;
+    }
+
+    .outro-icon-box {
+      width: 70px;
+      height: 70px;
+      background: rgba(13, 148, 136, 0.08);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--teal);
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(13, 148, 136, 0.15);
+    }
+
+    .outro-section h3 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .outro-section p {
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      max-width: 320px;
+    }
+
+    .outro-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(13, 148, 136, 0.45);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(10, 29, 55, 0.03);
+      border-color: var(--navy);
+      transform: translateY(-2px);
+    }
+
+    [data-theme="dark"] .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--white);
+    }
+
+    .page-face.back-cover {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+      border: 2px solid var(--gold);
+      color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+      text-align: center;
+    }
+
+    .page-face.back-cover::after {
+      display: none;
+    }
+
+    .back-cover-footer {
+      margin-top: 4rem;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+      line-height: 1.8;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+      width: 100%;
+    }
+
+    /* CONTROL BUTTONS */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 2rem;
+      z-index: 10;
+      position: relative;
+    }
+
+    .nav-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    [data-theme="dark"] .nav-btn {
+      color: var(--white);
+    }
+
+    .nav-btn:hover {
+      transform: scale(1.08);
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      color: var(--white);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none !important;
+      background: var(--card) !important;
+      color: var(--muted) !important;
+      border-color: var(--border) !important;
+      box-shadow: none !important;
+    }
+
+    .page-indicator {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 8px 20px;
+      border-radius: 30px;
+      box-shadow: var(--shadow-sm);
+      min-width: 140px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    [data-theme="dark"] .page-indicator {
+      color: var(--white);
+    }
+
+    /* IMAGE LIGHTBOX MODAL */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 11, 20, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .lightbox.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 80vh;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .lightbox.show .lightbox-content {
+      transform: scale(1);
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: block;
+    }
+
+    .lightbox-caption {
+      color: var(--white);
+      text-align: center;
+      margin-top: 1.5rem;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--white);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .lightbox-close:hover {
+      background: rgba(225, 29, 72, 0.8);
+      transform: scale(1.08);
+    }
+
+    /* FOOTER */
+    footer {
+      background: #050B14;
+      padding: 30px 6%;
+      color: rgba(255, 255, 255, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+      font-size: 0.82rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* RESPONSIVE SCALING */
+    @media(max-width: 768px) {
+      main {
+        padding-top: 100px;
+      }
+      
+      .book-scale-box {
+        height: 520px;
+      }
+
+      /* Book dimensions are scaled proportionally in JS to maintain clean aspect ratio */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden Reusable SVG Icons Container -->
+  <svg style="display: none;">
+    <defs>
+      <g id="icon-hospital">
+        <path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/>
+        <path d="M16 11h.01M16 7h.01M16 15h.01M8 11h.01M8 7h.01M8 15h.01M12 11h.01M12 7h.01M12 15h.01"/>
+        <path d="M10 22v-4h4v4"/>
+      </g>
+      <g id="icon-whatsapp">
+        <path d="M12.004 0C5.378 0 0 5.377 0 12.004c0 2.116.55 4.1 1.592 5.848L.062 24l6.3-1.654a11.93 11.93 0 0 0 5.642 1.417c6.626 0 12.004-5.379 12.004-12.004C24.008 5.377 18.63 0 12.004 0zm0 1.844c2.502 0 4.856.974 6.627 2.745a9.336 9.336 0 0 1 2.746 6.634c-.003 5.163-4.205 9.367-9.369 9.367-1.54 0-3.048-.38-4.406-1.103l-3.56.932.95-3.468A9.324 9.324 0 0 1 3.738 12c.003-5.164 4.207-9.368 9.371-9.368zM8.16 6.82c-.225.549-.225 1.036-.148 1.147.078.11 1.077 1.696 2.195 2.814 1.118 1.118 2.704 2.117 2.814 2.195.111.077.598.077 1.147-.148.55-.224 1.872-.777 2.42-1.002.549-.225.626-.45.626-.625 0-.175-.1-.275-.325-.4-.225-.125-1.324-.652-1.524-.725-.2-.075-.35-.1-.5.125s-.575.725-.7 1.075c-.125.35-.25.375-.55.225-.3-.15-1.267-.467-2.414-1.492-.893-.797-1.496-1.782-1.672-2.08-.176-.3-.019-.462.13-.61.135-.133.3-.35.45-.525.15-.175.2-.3.3-.5s.05-.375-.025-.525C8.94 8.705 8.39 7.37 8.16 6.82z"/>
+      </g>
+      <g id="icon-phone">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </g>
+      <g id="icon-arrow-left">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </g>
+      <g id="icon-arrow-right">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </g>
+      <g id="icon-moon">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </g>
+      <g id="icon-sun">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </g>
+      <g id="icon-close">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </g>
+      <g id="icon-zoom">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </g>
+    </defs>
+  </svg>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon-box">
+          <svg class="icon-svg" style="width: 22px; height: 22px;"><use href="#icon-hospital"/></svg>
+        </div>
+        <div class="logo-text">
+          Life Homecare<span>Service</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <button id="themeToggle" style="background:none;border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:1rem;" title="Toggle Dark Mode">
+          <svg class="icon-svg" id="themeBtnIcon"><use href="#icon-moon"/></svg>
+        </button>
+        <a href="index.html" class="btn-back-home">
+          <svg class="icon-svg" style="width:16px;height:16px"><use href="#icon-arrow-left"/></svg> Back to Home
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN SECTION -->
+  <main>
+    <div class="mesh-container">
+      <div class="mesh-blob blob-1"></div>
+      <div class="mesh-blob blob-2"></div>
+    </div>
+    
+    <div class="section-header">
+      <div class="section-tag">Photo Gallery</div>
+      <h2 class="section-title">Witness Lifecare In Action</h2>
+      <p class="section-sub">Flip the pages of our interactive album to see the medical professionalism, specialized home ICU setup, and compassionate care we offer to families.</p>
+    </div>
+
+    <!-- 3D BOOK PORTION -->
+    <div class="book-container-outer">
+      <div class="book-scale-box">
+        <div class="book-wrapper closed-front" id="bookWrapper">
+          <div class="book" id="bookCanvas">
+            
+            <!-- Leaf 1 (Cover Page & Table of Contents / Intro) -->
+            <div class="leaf active-right" id="l1" style="z-index: 6;">
+              <div class="page-face cover">
+                <div class="cover-border-box">
+                  <div class="cover-tag">Lifecare Photo Album</div>
+                  <h2>Lifecare Home<span>Service</span></h2>
+                  <div class="cover-divider"></div>
+                  <p class="cover-desc">Empathetic home nursing, ICU setup, and diagnostic support across Patna, Bihar</p>
+                  <div class="cover-footer">
+                    <span>Swipe or Click to Open</span>
+                    <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-arrow-right"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="page-face back intro-section">
+                <div class="page-content">
+                  <div class="intro-logo">
+                    <svg class="icon-svg" style="width: 32px; height: 32px;"><use href="#icon-hospital"/></svg>
+                  </div>
+                  <h3>Welcome to Our Journal</h3>
+                  <p class="intro-text">At Lifecare Home Service, patient-centric excellence underpins our nursing, post-op, baby care, and home intensive setups. Each slide records our qualified team members executing daily duty protocols across Patna with safety and vigilance.</p>
+                  <div class="intro-stats">
+                    <div class="intro-stat-card">
+                      <h4>5000+</h4>
+                      <p>Patients Cured</p>
+                    </div>
+                    <div class="intro-stat-card">
+                      <h4>150+</h4>
+                      <p>Trained Staff</p>
+                    </div>
+                  </div>
+                  <span class="page-number">Page 1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaf 2 (Professional Nursing & Home ICU Setup) -->
+            <div class="leaf" id="l2" style="z-index: 5;">
+              <div class="page-face front">
+                <div class="page-content">
+                  <div class="img-wrapper" onclick="openLightbox('gallery_nursing.png', 'Registered nurse administering medical care at patient home')">
+                    <img src="gallery_nursing.png" alt="Professional Nursing Care">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Professional Nursing</h3>
+                  <p>Certified GNM & B.Sc. nurses managing critical therapies, tracheostomy care, IV drips, dressing changes, and daily vital telemetry charts at home.</p>
+                  <span class="page-number">Page 2</span>
+                </div>
+              </div>
+              <div class="page-face back">
+                <div class="page-content">
+                  <div class="img-wrapper" onclick="openLightbox('gallery_icu.png', 'Clinical ICU setup configured in patient room')">
+                    <img src="gallery_icu.png" alt="Clinical ICU Setup at Home">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Home ICU setup</h3>
+                  <p>State-of-the-art ICU conversion using digital multi-para cardiac monitors, medical oxygen concentrators, BiPAP systems, and ICU clinical beds.</p>
+                  <span class="page-number">Page 3</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaf 3 (Physical Rehabilitation & Elderly Support) -->
+            <div class="leaf" id="l3" style="z-index: 4;">
+              <div class="page-face front">
+                <div class="page-content">
+                  <div class="img-wrapper" onclick="openLightbox('gallery_physio.png', 'Patient undergoing home physiotherapy rehabilitation')">
+                    <img src="gallery_physio.png" alt="Physical Rehabilitation Therapy">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Physical Rehabilitation</h3>
+                  <p>Structured physiotherapy plans targeting stroke rehabilitation, joint mobilization, neuro-rehab, and specialized post-op orthopedic healing.</p>
+                  <span class="page-number">Page 4</span>
+                </div>
+              </div>
+              <div class="page-face back">
+                <div class="page-content">
+                  <div class="img-wrapper" onclick="openLightbox('gallery_elderly.png', 'Elderly patient with home health caregiver')">
+                    <img src="gallery_elderly.png" alt="Attentive Elderly Care Support">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Elderly Support Care</h3>
+                  <p>Compassionate caregivers supporting activities of daily living (ADLs), personalized senior nutrition plans, hygiene support, and mobility assistance.</p>
+                  <span class="page-number">Page 5</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaf 4 (Doctor Consultations & Patient Care Profession) -->
+            <div class="leaf" id="l4" style="z-index: 3;">
+              <div class="page-face front">
+                <div class="page-content">
+                  <div class="img-wrapper portrait-img" onclick="openLightbox('gallery_doctor.png', 'Doctor review and cabin consultation')">
+                    <img src="gallery_doctor.png" alt="Doctor Consultation Cabin">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Expert Medical Guidance</h3>
+                  <p>Systematic clinical reviews by panel doctors. Our senior physicians inspect diagnosis files, supervise nurse routines, and advise prescriptions.</p>
+                  <span class="page-number">Page 6</span>
+                </div>
+              </div>
+              <div class="page-face back">
+                <div class="page-content">
+                  <div class="img-wrapper portrait-img" onclick="openLightbox('gallery_profession.png', 'Clinical bedside procedure by nurse')">
+                    <img src="gallery_profession.png" alt="Bedside Patient Treatment">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Bedside Clinical Service</h3>
+                  <p>Strict infection control protocols and clinical hygiene routines managed by our staff to expedite recovery and prevent secondary hospital bugs.</p>
+                  <span class="page-number">Page 7</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaf 5 (Night Duty Services & ICU Care Setup) -->
+            <div class="leaf" id="l5" style="z-index: 2;">
+              <div class="page-face front">
+                <div class="page-content">
+                  <div class="img-wrapper portrait-img" onclick="openLightbox('gallery_night_duty.png', 'Night duty nurse preparing medications')">
+                    <img src="gallery_night_duty.png" alt="Active Night Shift Nursing">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>24/7 Vigilant Monitoring</h3>
+                  <p>Continuous night duty staffing for high-risk patients. Our night coordinators ensure immediate vital-sign checks and medication timelines are kept.</p>
+                  <span class="page-number">Page 8</span>
+                </div>
+              </div>
+              <div class="page-face back">
+                <div class="page-content">
+                  <div class="img-wrapper portrait-img" onclick="openLightbox('gallery_icu_duty.png', 'Critical home ICU patient care assessment')">
+                    <img src="gallery_icu_duty.png" alt="Critical Home ICU Assessment">
+                    <div class="zoom-hint-icon">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-zoom"/></svg>
+                    </div>
+                  </div>
+                  <h3>Home ICU Supervision</h3>
+                  <p>Comprehensive monitoring logs detailing blood pressure fluctuations, oxygen sat ratios, and temperature patterns for direct clinical audits.</p>
+                  <span class="page-number">Page 9</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaf 6 (Back Cover CTA & Back Cover) -->
+            <div class="leaf" id="l6" style="z-index: 1;">
+              <div class="page-face front outro-section">
+                <div class="page-content" style="align-items: center; justify-content: center; width: 100%;">
+                  <div class="outro-icon-box">
+                    <svg class="icon-svg" style="width: 32px; height: 32px;"><use href="#icon-whatsapp"/></svg>
+                  </div>
+                  <h3>Request Home Care</h3>
+                  <p>Book a free clinical consultation session at your doorstep to determine requirements and verify caregiver profiles.</p>
+                  <div class="outro-buttons">
+                    <a href="https://wa.me/918777678011" class="btn btn-primary" target="_blank">
+                      <svg class="icon-svg" style="width: 16px; height: 16px;"><use href="#icon-whatsapp"/></svg> WhatsApp Bookings
+                    </a>
+                    <a href="index.html#booking" class="btn btn-outline">
+                      Fill Booking Form
+                    </a>
+                  </div>
+                  <span class="page-number">Page 10</span>
+                </div>
+              </div>
+              <div class="page-face back-cover">
+                <div class="cover-border-box">
+                  <div class="cover-tag">End of Journal</div>
+                  <h2>Caring for You, Like Family</h2>
+                  <div class="cover-divider"></div>
+                  <p class="cover-desc">Lifecare Home Service Patna Central Desk</p>
+                  <div class="back-cover-footer">
+                    <p>© 2025 Life Homecare Service</p>
+                    <p>Designed for Excellence. All Rights Reserved.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <button class="nav-btn" id="prevBtn" onclick="prevPage()" disabled title="Previous Page">
+          <svg class="icon-svg" style="width: 20px; height: 20px;"><use href="#icon-arrow-left"/></svg>
+        </button>
+        <div class="page-indicator" id="pageIndicator">Cover Page</div>
+        <button class="nav-btn" id="nextBtn" onclick="nextPage()" title="Next Page">
+          <svg class="icon-svg" style="width: 20px; height: 20px;"><use href="#icon-arrow-right"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- IMAGE LIGHTBOX ZOOM MODAL -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox()">
+        <svg class="icon-svg" style="width: 20px; height: 20px;"><use href="#icon-close"/></svg>
+      </button>
+      <img src="" alt="" class="lightbox-img" id="lightboxImg">
+      <div class="lightbox-caption" id="lightboxCaption">Caption Text</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Life Homecare Service. Developed by Pratik Kumar.</p>
+    <p>All Rights Reserved. Professional Home Health Solutions.</p>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // THEME CONFIGURATION
+    const themeToggle = document.getElementById('themeToggle');
+    const themeBtnIcon = document.getElementById('themeBtnIcon');
+    
+    function syncTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeBtnIcon.innerHTML = '<use href="#icon-sun"/>';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeBtnIcon.innerHTML = '<use href="#icon-moon"/>';
+      }
+    }
+    syncTheme();
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'light');
+          themeBtnIcon.innerHTML = '<use href="#icon-moon"/>';
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+          themeBtnIcon.innerHTML = '<use href="#icon-sun"/>';
+        }
+      });
+    }
+
+    // 3D BOOK FLIPPING CONTROLLER
+    let currentLeaf = 0;
+    const leaves = document.querySelectorAll('.leaf');
+    const maxLeaves = leaves.length;
+    
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const bookWrapper = document.getElementById('bookWrapper');
+
+    let currentScale = 1;
+
+    function updatePageStates(isMovingForward) {
+      // 1. Update leaf transform classes and z-index ordering
+      for (let i = 0; i < maxLeaves; i++) {
+        const leaf = leaves[i];
+        if (i < currentLeaf) {
+          leaf.classList.add('flipped');
+          leaf.style.zIndex = i + 1;
+          leaf.classList.remove('active-left', 'active-right');
+        } else {
+          leaf.classList.remove('flipped');
+          leaf.style.zIndex = maxLeaves - i;
+          leaf.classList.remove('active-left', 'active-right');
+        }
+      }
+
+      // 2. Set high z-index on the actively flipping leaf during rotation
+      if (isMovingForward !== undefined) {
+        const flippingIndex = isMovingForward ? currentLeaf - 1 : currentLeaf;
+        if (flippingIndex >= 0 && flippingIndex < maxLeaves) {
+          leaves[flippingIndex].style.zIndex = 20;
+        }
+      }
+
+      // 3. Mark active leaves so pointer events (clicks/links) work only for current page
+      if (currentLeaf === 0) {
+        // Book closed on cover
+        leaves[0].classList.add('active-right');
+      } else if (currentLeaf === maxLeaves) {
+        // Book closed on back cover
+        leaves[maxLeaves - 1].classList.add('active-left');
+      } else {
+        // Book open in middle
+        leaves[currentLeaf - 1].classList.add('active-left');
+        leaves[currentLeaf].classList.add('active-right');
+      }
+
+      // 4. Update shifting translation and inline transform
+      let translateX = 0;
+      if (currentLeaf === 0) {
+        bookWrapper.className = "book-wrapper closed-front";
+        pageIndicator.textContent = "Cover Page";
+        translateX = -225;
+      } else if (currentLeaf === maxLeaves) {
+        bookWrapper.className = "book-wrapper closed-back";
+        pageIndicator.textContent = "Back Cover";
+        translateX = 225;
+      } else {
+        bookWrapper.className = "book-wrapper open";
+        // Double page spreads (Page 1-2, 3-4, etc.)
+        const pageLeft = (currentLeaf - 1) * 2 + 1;
+        const pageRight = pageLeft + 1;
+        pageIndicator.textContent = `Pages ${pageLeft} - ${pageRight}`;
+        translateX = 0;
+      }
+
+      // Apply the combined scale and translate to bookWrapper directly!
+      bookWrapper.style.transform = `scale(${currentScale}) translateX(${translateX}px)`;
+      bookWrapper.style.transformOrigin = 'center center';
+
+      // 5. Disable/Enable control buttons
+      prevBtn.disabled = (currentLeaf === 0);
+      nextBtn.disabled = (currentLeaf === maxLeaves);
+    }
+
+    function nextPage() {
+      if (currentLeaf < maxLeaves) {
+        currentLeaf++;
+        updatePageStates(true);
+      }
+    }
+
+    function prevPage() {
+      if (currentLeaf > 0) {
+        currentLeaf--;
+        updatePageStates(false);
+      }
+    }
+
+    // Keyboard support (Left/Right Arrows)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' && currentLeaf < maxLeaves) {
+        nextPage();
+      } else if (e.key === 'ArrowLeft' && currentLeaf > 0) {
+        prevPage();
+      }
+    });
+
+    // Mobile Swipe Gesture Support
+    let startX = 0;
+    const bookArea = document.getElementById('bookCanvas');
+
+    bookArea.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, {passive: true});
+
+    bookArea.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diffX = startX - endX;
+      
+      if (diffX > 60 && currentLeaf < maxLeaves) {
+        nextPage();
+      } else if (diffX < -60 && currentLeaf > 0) {
+        prevPage();
+      }
+    }, {passive: true});
+
+    // Touch click margins to turn pages
+    bookArea.addEventListener('click', (e) => {
+      // Don't turn page if clicking an image, link, or button
+      if (e.target.closest('.img-wrapper') || e.target.closest('.btn') || e.target.closest('.intro-logo')) {
+        return;
+      }
+      
+      const rect = bookArea.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const center = rect.width / 2;
+      
+      if (clickX > center && currentLeaf < maxLeaves) {
+        nextPage();
+      } else if (clickX <= center && currentLeaf > 0) {
+        prevPage();
+      }
+    });
+
+    // RESPONSIVE RESCALE FUNCTION
+    function rescaleBook() {
+      const container = document.querySelector('.book-scale-box');
+      if (!container) return;
+
+      const containerWidth = container.clientWidth;
+      const baseWidth = 900; // Original desktop layout width
+      const margin = 20;
+
+      if (containerWidth < baseWidth) {
+        currentScale = (containerWidth - margin) / baseWidth;
+      } else {
+        currentScale = 1;
+      }
+      
+      updatePageStates();
+    }
+    window.addEventListener('resize', rescaleBook);
+    window.addEventListener('DOMContentLoaded', () => {
+      rescaleBook();
+      updatePageStates();
+    });
+
+    // LIGHTBOX CONTROLLER
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+
+    function openLightbox(src, captionText) {
+      lightboxImg.src = src;
+      lightboxCaption.textContent = captionText;
+      lightbox.classList.add('show');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('show');
+    }
+
+    // Keyboard support for Lightbox
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  </script>
+</body>
+</html>
